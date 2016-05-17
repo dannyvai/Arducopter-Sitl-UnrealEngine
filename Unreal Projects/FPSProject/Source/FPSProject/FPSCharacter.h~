@@ -30,11 +30,19 @@ public:
 	UFUNCTION()
 	void MoveRight(float Val);
 
+   //sets jump flag when key is pressed
+   UFUNCTION()
+   void OnStartJump();
+   //clears jump flag when key is released
+   UFUNCTION()
+   void OnStopJump();
+
 protected:
 	float deltaTime;
 	int m_socket;
 
-    float pitch = -9999 ,roll = -9999,yaw = -9999;
+    float m_pitch, m_roll, m_yaw;
+    float m_utm_x, m_utm_y, m_alt;
 };
 
  

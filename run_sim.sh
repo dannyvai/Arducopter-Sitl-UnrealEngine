@@ -1,9 +1,27 @@
 #!/bin/bash
+
+Ardupilot_folder=~/ardupilot
+
+
 pkill -9 -f ArduCopter.elf
 pkill -9 -f sim_wrapper.py
 pkill -9 -f mavproxy.py
 
 screen -wipe
+
+while [[ $# > 0 ]]
+do
+    key="$1"
+    case $key in
+        kill)
+            shift
+            exit
+            ;;
+    esac   
+    shift
+done
+
+cp ./ardupilot/Tools/autotest/pysim/sim_wrapper.py $Ardupilot_folder/Tools/autotest/pysim/
 
 screen -t arducopter -dm bash -c "/home/ohadanny/ardupilot/ArduCopter/ArduCopter.elf -S -I0 --home -35.363261,149.165230,584,353; sleep 1000"
 sleep 1

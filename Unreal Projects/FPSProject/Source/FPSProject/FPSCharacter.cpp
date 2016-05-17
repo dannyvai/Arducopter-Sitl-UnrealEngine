@@ -27,7 +27,7 @@ int errno;
 
 // Sets default values
 AFPSCharacter::AFPSCharacter():
-m_pitch(0), m_roll(0), m_yaw(0)
+m_pitch(0), m_roll(0), m_yaw(0),m_utm_x(0), m_utm_y(0), m_alt(0)
 {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -147,15 +147,15 @@ void AFPSCharacter::Tick( float DeltaTime )
 		}
         
         telem = (double*) buf;
-        double lat = telem[0];
-        double lon = telem[1];
+        double utm_x = telem[0];
+        double utm_y = telem[1];
         double alt = telem[2];
         double roll = telem[3];
         double pitch = telem[4];
         double yaw = telem[5];
 
 
-		sprintf(temp_str,"lat:%f,lon:%f,alt:%f,roll:%f,pitch:%f,yaw:%f" ,lat,lon,alt,roll,pitch,yaw);
+		sprintf(temp_str,"lat:%f,lon:%f,alt:%f,roll:%f,pitch:%f,yaw:%f" ,utm_x,utm_y,alt,roll,pitch,yaw);
 
         if(m_yaw != yaw) 
         {
@@ -177,7 +177,63 @@ void AFPSCharacter::Tick( float DeltaTime )
             m_roll = roll;
         }
 
-        
+        if(m_utm_x != utm_x)
+        {
+            if ((int)m_utm_x != 0)
+            {
+                float dif = utm_x - m_utm_x;
+	            const FRotator Rotation = Controller->GetControlRotation();
+	            const FVector Direction = FRotationMatrix(Rotation).GetScaledAxis(EAxis::Y);
+	            // add movement in that direction
+	            AddMovementInput(Direction, dif);
+	            if (GEngine)
+	            {
+                    sprintf(temp_str,"m_utm_x diff : %f",dif);
+	                GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Blue, temp_str);
+
+	            }
+            }
+            m_utm_x = utm_x;
+        }
+
+        if(m_alt != alt)
+        {
+            if ((int)m_alt != 0)
+            {
+                float dif = alt - m_alt;
+
+	            const FRotator Rotation = Controller->GetControlRotation();
+	            const FVector Direction = FRotationMatrix(Rotation).GetScaledAxis(EAxis::Z);
+	            // add movement in that direction
+	            AddMovementInput(GetActorUpVector() , dif);
+	            if (GEngine)
+	            {
+                    sprintf(temp_str,"m_utm_z diff : %f",dif);
+	                GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Blue, temp_str);
+
+	            }
+            }
+            m_alt = alt;
+        }
+
+        if(m_utm_y != utm_y)
+        {
+            if ((int)m_utm_y != 0)
+            {
+
+                float dif = utm_y - m_utm_y;
+	            // find out which way is forward
+	            FRotator Rotation = Controller->GetControlRotation();
+	            const FVector Direction = FRotationMatrix(Rotation).GetScaledAxis(EAxis::X);
+	            AddMovementInput(Direction, dif);
+	            if (GEngine)
+	            {
+                    sprintf(temp_str,"m_utm_y diff : %f",dif);
+	                GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Blue, temp_str);
+	            }
+            }
+            m_utm_y = utm_y;
+        }
         //FRotator rot(30, 45, 5);
         //this->SetActorRotation(rot);
         
@@ -195,6 +251,8 @@ void AFPSCharacter::SetupPlayerInputComponent(class UInputComponent* InputCompon
         // set up gameplay key bindings
         InputComponent->BindAxis("MoveForward", this, &AFPSCharacter::MoveForward);
         InputComponent->BindAxis("MoveRight", this, &AFPSCharacter::MoveRight);
+        InputComponent->BindAction("Jump", IE_Pressed, this, &AFPSCharacter::OnStartJump);
+        InputComponent->BindAction("Jump", IE_Released, this, &AFPSCharacter::OnStopJump);
 }
 
 void AFPSCharacter::MoveForward(float Value)
@@ -227,4 +285,14 @@ void AFPSCharacter::MoveRight(float Value)
 	    AddMovementInput(Direction, Value);
 	}
 }
+
+void AFPSCharacter::OnStartJump()
+{
+   bPressedJump = true;
+}
+void AFPSCharacter::OnStopJump()
+{
+   bPressedJump = false;
+}
+
 

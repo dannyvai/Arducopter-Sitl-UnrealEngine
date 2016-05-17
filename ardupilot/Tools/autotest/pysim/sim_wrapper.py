@@ -3,6 +3,7 @@
 import util, time, os, sys, math
 import socket, struct
 import select, errno
+import utm
 
 from pymavlink import fgFDM
 import numpy as np
@@ -17,8 +18,11 @@ def sim_send_UT(m, a):
         yaw = np.rad2deg(yaw)
         roll = np.rad2deg(roll)
         pitch = np.rad2deg(pitch)
-        print a.latitude,a.longitude,a.altitude,roll,pitch,yaw
-        dataToSend = struct.pack("dddddd",a.latitude,a.longitude,a.altitude,roll,pitch,yaw)
+
+        utm_quad_pos = utm.from_latlon(a.latitude,a.longitude)
+
+        print utm_quad_pos[0],utm_quad_pos[1],a.altitude,roll,pitch,yaw
+        dataToSend = struct.pack("dddddd",utm_quad_pos[0],utm_quad_pos[1],a.altitude,roll,pitch,yaw)
         ut_out.sendto(dataToSend,ut_out_address)
 
 
