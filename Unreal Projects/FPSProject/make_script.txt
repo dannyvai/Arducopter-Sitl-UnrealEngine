@@ -1,0 +1,2 @@
+mono UnrealBuildTool.exe FPSProject Linux Debug -project="\"/home/ohadanny/Documents/Unreal Projects/FPSProject/FPSProject.uproject\""
+
