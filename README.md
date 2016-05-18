@@ -12,6 +12,8 @@ Linux : [Tutorial](https://wiki.unrealengine.com/Building_On_Linux)
 ```
 ./UnrealEngine-4.11/Setup.sh
 ./UnrealEngine-4.11/Engine/Build/BatchFiles/Linux/GenerateProjectFiles.sh
+cd ./UnrealEngine-4.11/
+make
 ```
 Using python packages :
 pymavlink - for the simulation
