@@ -2,6 +2,15 @@
 Create a binding between the arducopter sitl simulation and the unreal engine
 
 
+Installation:
+Unreal engine :
+Download link (windows/Mac)
+https://www.unrealengine.com/dashboard
+Linux: (after profile change in the unreal page)
+git clone https://github.com/EpicGames/UnrealEngine
+
+
+
 Using python packages :
 pymavlink - for the simulation
 utm - for the conversion of geo to utm
