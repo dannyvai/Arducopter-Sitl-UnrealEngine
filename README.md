@@ -8,8 +8,11 @@ Download link
 * [Windows/Mac](https://www.unrealengine.com/).
 * [Linux](https://github.com/EpicGames/UnrealEngine)
 
-
-
+Linux : [Tutorial](https://wiki.unrealengine.com/Building_On_Linux)
+```
+./UnrealEngine-4.11/Setup.sh
+./UnrealEngine-4.11/Engine/Build/BatchFiles/Linux/GenerateProjectFiles.sh
+```
 Using python packages :
 pymavlink - for the simulation
 utm - for the conversion of geo to utm
