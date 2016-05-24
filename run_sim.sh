@@ -1,6 +1,6 @@
 #!/bin/bash
 
-Ardupilot_folder=~/ardupilot
+Ardupilot_folder=~/ardupilot/ardupilot
 
 
 pkill -9 -f ArduCopter.elf
@@ -23,10 +23,9 @@ done
 
 cp ./ardupilot/Tools/autotest/pysim/sim_wrapper.py $Ardupilot_folder/Tools/autotest/pysim/
 
-screen -t arducopter -dm bash -c "/home/ohadanny/ardupilot/ArduCopter/ArduCopter.elf -S -I0 --home -35.363261,149.165230,584,353; sleep 1000"
+screen -t arducopter -dm bash -c "$Ardupilot_folder/ArduCopter/ArduCopter.elf -S -I0 --home -35.363261,149.165230,584,353; sleep 1000"
 sleep 1
-screen -t sim_wrapper -dm bash -c "python /home/ohadanny/ardupilot/Tools/autotest/pysim/sim_wrapper.py --home=-35.363261,149.165230,584,353 --simin=127.0.0.1:5502 --simout=127.0.0.1:5501 --fgout=127.0.0.1:5503; sleep 1000"
+screen -t sim_wrapper -dm bash -c "python $Ardupilot_folder/Tools/autotest/pysim/sim_wrapper.py --home=-35.363261,149.165230,584,353 --simin=127.0.0.1:5502 --simout=127.0.0.1:5501 --fgout=127.0.0.1:5503; sleep 1000"
 sleep 1
 screen -t mavproxy -m bash -c "mavproxy.py --master tcp:127.0.0.1:5760; sleep 1000"
 sleep 1
-
