@@ -19,6 +19,8 @@ Using python packages :
 pymavlink - for the simulation
 utm - for the conversion of geo to utm
 
+> sudo pip install utm
+
 Running the Unreal-Engine  :
 > ~/UnrealEngine/Engine/Binaries/Linux/UE4Editor
 
