@@ -5,13 +5,10 @@ Downloading the Arducopter environment:
 
 * Download the arducopter code from [github](https://github.com/ArduPilot/ardupilot/tree/master/ArduCopter)
 * Or you can do:
-```
-https://github.com/ArduPilot/ardupilot.git
-```
+> https://github.com/ArduPilot/ardupilot.git
+
  * Then you need to checkout the version that we know the simulation works (may work with other higher version)
-```
-git checkout Copter-3.3-rc5
-```
+> git checkout Copter-3.3-rc5
 
 
 Installation:
@@ -31,6 +28,7 @@ Using python packages :
 pymavlink - for the simulation
 utm - for the conversion of geo to utm
 
+> sudo apt-get install python-pip
 > sudo pip install utm
 
 Running the Unreal-Engine  :
@@ -47,9 +45,8 @@ Kill simulation:
 > ./run_sim kill
 
 In order to make the run_sim work you will need to install screen
-```
-sudo apt-get install screen
-```
+> sudo apt-get install screen
+
 
 
 In order for the simulation to run you need to overlook all the failsafes and such:
