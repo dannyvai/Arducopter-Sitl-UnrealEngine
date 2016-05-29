@@ -19,7 +19,6 @@ sudo pip install pymavlink
 sudo pip install MAVProxy
 ```
 
-<<<<<<< HEAD
  * In order to compile the ArduCopter SITL :
 ```
 you need to make sure you have gawk installed
@@ -27,8 +26,7 @@ sudo apt-get install gawk
 cd ardupilot/ArduCopter
 make sitl
 ```
-=======
->>>>>>> b1f26132a100c0ec3577968f96552eed175ffc8a
+
 Installation:
 Unreal engine :
 Download link 
