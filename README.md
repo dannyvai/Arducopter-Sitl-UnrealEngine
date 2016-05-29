@@ -8,6 +8,7 @@ Downloading the Arducopter environment:
 ```
 https://github.com/ArduPilot/ardupilot.git
 ```
+
  * Then you need to checkout the version that we know the simulation works (may work with other higher version)
 ```
 git checkout Copter-3.3-rc5
@@ -18,6 +19,7 @@ sudo pip install pymavlink
 sudo pip install MAVProxy
 ```
 
+<<<<<<< HEAD
  * In order to compile the ArduCopter SITL :
 ```
 you need to make sure you have gawk installed
@@ -25,6 +27,8 @@ sudo apt-get install gawk
 cd ardupilot/ArduCopter
 make sitl
 ```
+=======
+>>>>>>> b1f26132a100c0ec3577968f96552eed175ffc8a
 Installation:
 Unreal engine :
 Download link 
@@ -42,6 +46,7 @@ Using python packages :
 pymavlink - for the simulation
 utm - for the conversion of geo to utm
 
+> sudo apt-get install python-pip
 > sudo pip install utm
 
 Running the Unreal-Engine  :
@@ -56,6 +61,11 @@ Running the arducopter sitl with the communication to the unreal-project:
 
 Kill simulation:
 > ./run_sim kill
+
+In order to make the run_sim work you will need to install screen
+> sudo apt-get install screen
+
+
 
 In order for the simulation to run you need to overlook all the failsafes and such:
 in the mavproxy screen run :
