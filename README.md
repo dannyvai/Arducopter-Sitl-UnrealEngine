@@ -1,6 +1,18 @@
 # Arducopter-Sitl-UnrealEngine
 Create a binding between the arducopter sitl simulation and the unreal engine
 
+Downloading the Arducopter environment:
+
+* Download the arducopter code from [github](https://github.com/ArduPilot/ardupilot/tree/master/ArduCopter)
+* Or you can do:
+```
+https://github.com/ArduPilot/ardupilot.git
+```
+ * Then you need to checkout the version that we know the simulation works (may work with other higher version)
+```
+git checkout Copter-3.3-rc5
+```
+
 
 Installation:
 Unreal engine :
