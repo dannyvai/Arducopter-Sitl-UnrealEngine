@@ -12,8 +12,19 @@ https://github.com/ArduPilot/ardupilot.git
 ```
 git checkout Copter-3.3-rc5
 ```
+ * Then you need to install the pymavlink and Mavproxy python libraries
+```
+sudo pip install pymavlink
+sudo pip install MAVProxy
+```
 
-
+ * In order to compile the ArduCopter SITL :
+```
+you need to make sure you have gawk installed
+sudo apt-get install gawk
+cd ardupilot/ArduCopter
+make sitl
+```
 Installation:
 Unreal engine :
 Download link 

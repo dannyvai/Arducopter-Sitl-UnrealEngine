@@ -1,6 +1,6 @@
 #!/bin/bash
 
-Ardupilot_folder=~/ardupilot/ardupilot
+Ardupilot_folder=~/ardupilot/
 
 
 pkill -9 -f ArduCopter.elf
@@ -20,6 +20,10 @@ do
     esac   
     shift
 done
+
+cd $Ardupilot_folder/ArduCopter/
+make sitl
+cd -
 
 cp ./ardupilot/Tools/autotest/pysim/sim_wrapper.py $Ardupilot_folder/Tools/autotest/pysim/
 

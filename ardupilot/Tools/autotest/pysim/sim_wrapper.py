@@ -21,7 +21,7 @@ def sim_send_UT(m, a):
 
         utm_quad_pos = utm.from_latlon(a.latitude,a.longitude)
 
-        print utm_quad_pos[0],utm_quad_pos[1],a.altitude,roll,pitch,yaw
+        print utm_quad_pos[0],utm_quad_pos[1],a.altitude,roll,pitch,yaw, a.velocity.x, a.velocity.y, a.velocity.z
         dataToSend = struct.pack("dddddd",utm_quad_pos[0],utm_quad_pos[1],a.altitude,roll,pitch,yaw)
         ut_out.sendto(dataToSend,ut_out_address)
 
