@@ -46,6 +46,12 @@ Running the arducopter sitl with the communication to the unreal-project:
 Kill simulation:
 > ./run_sim kill
 
+In order to make the run_sim work you will need to install screen
+```
+sudo apt-get install screen
+```
+
+
 In order for the simulation to run you need to overlook all the failsafes and such:
 in the mavproxy screen run :
 arm uncheck all
