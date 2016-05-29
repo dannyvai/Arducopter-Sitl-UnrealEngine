@@ -205,7 +205,8 @@ void AFPSCharacter::Tick( float DeltaTime )
 	            const FRotator Rotation = Controller->GetControlRotation();
 	            const FVector Direction = FRotationMatrix(Rotation).GetScaledAxis(EAxis::Z);
 	            // add movement in that direction
-	            AddMovementInput(GetActorUpVector() , dif);
+	            //AddMovementInput(GetActorUpVector() , dif);
+                OnStartJump();
 	            if (GEngine)
 	            {
                     sprintf(temp_str,"m_utm_z diff : %f",dif);
@@ -288,10 +289,19 @@ void AFPSCharacter::MoveRight(float Value)
 
 void AFPSCharacter::OnStartJump()
 {
+   if (GEngine)
+   {
+	   GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Blue, TEXT("On start jump!"));
+   }
    bPressedJump = true;
 }
 void AFPSCharacter::OnStopJump()
 {
+   if (GEngine)
+   {
+	   GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Blue, TEXT("On stop jump!"));
+   }
+
    bPressedJump = false;
 }
 
