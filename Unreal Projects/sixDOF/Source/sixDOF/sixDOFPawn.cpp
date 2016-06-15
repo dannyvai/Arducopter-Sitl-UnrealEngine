@@ -79,7 +79,7 @@ m_yaw(0.0)
 	PlaneMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("PlaneMesh0"));
 	PlaneMesh->SetStaticMesh(ConstructorStatics.PlaneMesh.Get());
 	RootComponent = PlaneMesh;
-
+/*
 	// Create a spring arm component
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm0"));
 	SpringArm->AttachTo(RootComponent);
@@ -87,10 +87,10 @@ m_yaw(0.0)
 	SpringArm->SocketOffset = FVector(0.f,0.f,60.f);
 	SpringArm->bEnableCameraLag = false;
 	SpringArm->CameraLagSpeed = 15.f;
-
+*/
 	// Create camera component 
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera0"));
-	Camera->AttachTo(SpringArm, USpringArmComponent::SocketName);
+	Camera->AttachTo(RootComponent);
 	Camera->bUsePawnControlRotation = true; // Don't rotate camera with controller
 
 }
