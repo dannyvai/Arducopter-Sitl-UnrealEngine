@@ -12,7 +12,7 @@ i = 0
 def sim_send_UT(m, a):
     global i
     i+=1
-    if i%400 == 0:
+    if i%40 == 0:
         earth_rates = util.BodyRatesToEarthRates(a.dcm, a.gyro)
         (roll, pitch, yaw) = a.dcm.to_euler()
         yaw = np.rad2deg(yaw)
@@ -22,7 +22,7 @@ def sim_send_UT(m, a):
         utm_quad_pos = utm.from_latlon(a.latitude,a.longitude)
 
         print utm_quad_pos[0],utm_quad_pos[1],a.altitude,roll,pitch,yaw, a.velocity.x, a.velocity.y, a.velocity.z
-        dataToSend = struct.pack("dddddd",utm_quad_pos[0],utm_quad_pos[1],a.altitude,roll,pitch,yaw)
+        dataToSend = struct.pack("ddddddddd",utm_quad_pos[0],utm_quad_pos[1],a.altitude,roll,pitch,yaw,a.velocity.x, a.velocity.y, a.velocity.z)
         ut_out.sendto(dataToSend,ut_out_address)
 
 

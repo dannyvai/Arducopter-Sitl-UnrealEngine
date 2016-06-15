@@ -51,8 +51,15 @@ int recvtimeout(int s, char *buf, int len, int timeout,struct sockaddr * si_othe
 }
 
 
-AsixDOFPawn::AsixDOFPawn()
+AsixDOFPawn::AsixDOFPawn():
+m_vx(0.0),
+m_vy(0.0), 
+m_vz(0.0), 
+m_roll(0.0),
+m_pitch(0.0),
+m_yaw(0.0)
 {
+	
 	// Structure to hold one-time initialization
 	struct FConstructorStatics
 	{
@@ -81,16 +88,42 @@ AsixDOFPawn::AsixDOFPawn()
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera0"));
 	Camera->AttachTo(SpringArm, USpringArmComponent::SocketName);
 	Camera->bUsePawnControlRotation = false; // Don't rotate camera with controller
-
+    /*
 	// Set handling parameters
 	Acceleration = 500.f;
 	TurnSpeed = 50.f;
 	MaxSpeed = 4000.f;
 	MinSpeed = 500.f;
 	CurrentForwardSpeed = 500.f;
+	*/
+}
 
+AsixDOFPawn::~AsixDOFPawn()
+{
+    printf("dying! dying! dying! dying! dying! dying! dying! dying! dying! dying! dying! dying! dying! \n");
+    
+    if (AsixDOFPawn::m_socket != -1)
+    {
+        close(AsixDOFPawn::m_socket);
+        AsixDOFPawn::m_socket = -1;
+    }
+}
 
-/*odod*/
+void AsixDOFPawn::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	printf("ending! ending! ending! ending! ending! ending! ending! ending! ending! ending! ending! ending! \n");
+    if (AsixDOFPawn::m_socket != -1)
+    {
+        close(AsixDOFPawn::m_socket);
+        AsixDOFPawn::m_socket = -1;
+    }
+    Super::EndPlay(EndPlayReason);
+}
+
+void  AsixDOFPawn::BeginPlay()
+{
+	Super::BeginPlay();
+	/*odod*/
 
 	deltaTime = 0;
 	struct sockaddr_in si_me;
@@ -126,22 +159,13 @@ AsixDOFPawn::AsixDOFPawn()
         }
 	    fcntl(AsixDOFPawn::m_socket,O_NONBLOCK);
     }
-/*odod*/
+	/*odod*/
+
 }
 
-AsixDOFPawn::~AsixDOFPawn()
-{
-    printf("dying! dying! dying! dying! dying! dying! dying! dying! dying! dying! dying! dying! dying! \n");
-    if (AsixDOFPawn::m_socket != -1)
-    {
-        close(AsixDOFPawn::m_socket);
-    }
-}
-
-
-void AsixDOFPawn::OurTick(float DeltaSeconds) 
+bool AsixDOFPawn::OurTick(float DeltaSeconds) 
 { 
-
+	bool ret = false;
     char buf[BUFLEN];
 	struct sockaddr_in si_other;
 	int slen = sizeof(si_other) , recv_len = 0;
@@ -150,7 +174,7 @@ void AsixDOFPawn::OurTick(float DeltaSeconds)
 
     if (m_socket == -1)
     {
-        return;
+        return ret;
     }
 	if ((recv_len = recvtimeout(AsixDOFPawn::m_socket, buf, BUFLEN, 10 ,(struct sockaddr *) &si_other, (socklen_t *)&slen)) == -1)
 	{   
@@ -159,28 +183,57 @@ void AsixDOFPawn::OurTick(float DeltaSeconds)
 
 	if (recv_len > 0)
 	{
-        printf("Recieved message (len %d)\n",recv_len );
+        telem = (double*) buf;
+        double utm_x = telem[0];
+        double utm_y = telem[1];
+        double alt = telem[2];
+        double roll = telem[3];
+        double pitch = telem[4];
+        double yaw = telem[5];
+        double vx = telem[6];
+        double vy = telem[7];
+        double vz = telem[8];
+
+        m_vx = vx;
+    	m_vy = vy;
+    	m_vz = vz;
+
+       	m_Deltaroll =  roll  - m_roll;
+       	m_Deltapitch = pitch - m_pitch;
+		m_Deltayaw =   yaw   - m_yaw;
+		//printf("Delta --> %f %f %f \n",m_Deltaroll, m_Deltapitch, m_Deltayaw );
+		printf("speed --> %f %f %f \n",m_vx, m_vy, m_vz );
+		m_roll  = roll;
+		m_pitch = pitch;
+		m_yaw   = yaw;
+		ret = true;
     }
+    return ret;
 }
 
 void AsixDOFPawn::Tick(float DeltaSeconds)
 {
-    OurTick(DeltaSeconds);
-    //printf("running %f\n",DeltaSeconds);
-	const FVector LocalMove = FVector(CurrentForwardSpeed * DeltaSeconds, 0.f, 0.f);
+    bool ret = OurTick(DeltaSeconds);
+    if(ret)
+    {
+	    //printf("running %f\n",DeltaSeconds);
+		const FVector LocalMove = FVector(-m_vx, -m_vy, -m_vz*10);//(CurrentForwardSpeed * DeltaSeconds, 0.f, 0.f);
 
-	// Move plan forwards (with sweep so we stop when we collide with things)
-	AddActorLocalOffset(LocalMove, true);
+		// Move plan forwards (with sweep so we stop when we collide with things)
+		AddActorLocalOffset(LocalMove, true);
 
-	// Calculate change in rotation this frame
-	FRotator DeltaRotation(0,0,0);
-	DeltaRotation.Pitch = CurrentPitchSpeed * DeltaSeconds;
-	DeltaRotation.Yaw = CurrentYawSpeed * DeltaSeconds;
-	DeltaRotation.Roll = CurrentRollSpeed * DeltaSeconds;
-
-	// Rotate plane
-	AddActorLocalRotation(DeltaRotation);
-
+		// Calculate change in rotation this frame
+		FRotator DeltaRotation(0,0,0);
+		//printf("Delta -> %f %f %f \n",m_Deltaroll, m_Deltapitch, m_Deltayaw );
+		//printf("raw -> %f %f %f \n",m_roll, m_pitch, m_yaw );
+		
+		DeltaRotation.Pitch = m_Deltapitch;
+		DeltaRotation.Yaw 	= m_Deltayaw;
+		DeltaRotation.Roll 	= m_Deltaroll;
+		
+		// Rotate plane
+		AddActorLocalRotation(DeltaRotation);
+	}
 	// Call any parent class Tick implementation
 	Super::Tick(DeltaSeconds);
 }
@@ -188,7 +241,7 @@ void AsixDOFPawn::Tick(float DeltaSeconds)
 void AsixDOFPawn::NotifyHit(class UPrimitiveComponent* MyComp, class AActor* Other, class UPrimitiveComponent* OtherComp, bool bSelfMoved, FVector HitLocation, FVector HitNormal, FVector NormalImpulse, const FHitResult& Hit)
 {
 	Super::NotifyHit(MyComp, Other, OtherComp, bSelfMoved, HitLocation, HitNormal, NormalImpulse, Hit);
-
+	printf("Hit!\n");
 	// Set velocity to zero upon collision
 	CurrentForwardSpeed = 0.f;
 }
@@ -197,15 +250,19 @@ void AsixDOFPawn::NotifyHit(class UPrimitiveComponent* MyComp, class AActor* Oth
 void AsixDOFPawn::SetupPlayerInputComponent(class UInputComponent* InputComponent)
 {
 	check(InputComponent);
-
+	
 	// Bind our control axis' to callback functions
+	/*
 	InputComponent->BindAxis("Thrust", this, &AsixDOFPawn::ThrustInput);
 	InputComponent->BindAxis("MoveUp", this, &AsixDOFPawn::MoveUpInput);
 	InputComponent->BindAxis("MoveRight", this, &AsixDOFPawn::MoveRightInput);
+	*/
 }
 
+/*
 void AsixDOFPawn::ThrustInput(float Val)
 {
+	printf("move thrust value %.3f\n",Val);
 	// Is there no input?
 	bool bHasInput = !FMath::IsNearlyEqual(Val, 0.f);
 	// If input is not held down, reduce speed
@@ -218,6 +275,7 @@ void AsixDOFPawn::ThrustInput(float Val)
 
 void AsixDOFPawn::MoveUpInput(float Val)
 {
+	printf("move pitch speed %.0f %.3f %.3f %.3f\n", Val, CurrentPitchSpeed, CurrentYawSpeed, TurnSpeed);
 	// Target pitch speed is based in input
 	float TargetPitchSpeed = (Val * TurnSpeed * -1.f);
 
@@ -230,6 +288,7 @@ void AsixDOFPawn::MoveUpInput(float Val)
 
 void AsixDOFPawn::MoveRightInput(float Val)
 {
+	printf("move right value %.3f\n",Val);
 	// Target yaw speed is based on input
 	float TargetYawSpeed = (Val * TurnSpeed);
 
@@ -246,3 +305,4 @@ void AsixDOFPawn::MoveRightInput(float Val)
 	// Smoothly interpolate roll speed
 	CurrentRollSpeed = FMath::FInterpTo(CurrentRollSpeed, TargetRollSpeed, GetWorld()->GetDeltaSeconds(), 2.f);
 }
+*/

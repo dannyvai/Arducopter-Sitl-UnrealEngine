@@ -36,39 +36,48 @@ protected:
 	// End APawn overrides
 
 	/** Bound to the thrust axis */
-	void ThrustInput(float Val);
+	//void ThrustInput(float Val);
 	
 	/** Bound to the vertical axis */
-	void MoveUpInput(float Val);
+	//void MoveUpInput(float Val);
 
 	/** Bound to the horizontal axis */
-	void MoveRightInput(float Val);
+	//void MoveRightInput(float Val);
+
+	virtual void BeginPlay();
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason);
     
 /* odod */
-    void OurTick(float DeltaSeconds);
+    bool OurTick(float DeltaSeconds);
     float deltaTime;
 	static int m_socket;
 
+	float m_vx;
+	float m_vy;
+	float m_vz;
+
     float m_pitch, m_roll, m_yaw;
+    float m_Deltapitch, m_Deltaroll, m_Deltayaw;
     float m_utm_x, m_utm_y, m_alt;
 /* odod */
 private:
 
 	/** How quickly forward speed changes */
-	UPROPERTY(Category=Plane, EditAnywhere)
-	float Acceleration;
+	//UPROPERTY(Category=Plane, EditAnywhere)
+	//float Acceleration;
 
 	/** How quickly pawn can steer */
-	UPROPERTY(Category=Plane, EditAnywhere)
-	float TurnSpeed;
+	//UPROPERTY(Category=Plane, EditAnywhere)
+	//float TurnSpeed;
 
 	/** Max forward speed */
-	UPROPERTY(Category = Pitch, EditAnywhere)
-	float MaxSpeed;
+	//UPROPERTY(Category = Pitch, EditAnywhere)
+	//float MaxSpeed;
 
 	/** Min forward speed */
-	UPROPERTY(Category=Yaw, EditAnywhere)
-	float MinSpeed;
+	//UPROPERTY(Category=Yaw, EditAnywhere)
+	//float MinSpeed;
+
 
 	/** Current forward speed */
 	float CurrentForwardSpeed;
