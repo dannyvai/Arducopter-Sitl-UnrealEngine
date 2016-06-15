@@ -15,6 +15,7 @@
 #include <unistd.h>
 #include <fcntl.h>
 
+#include <math.h>
 #include <errno.h>
  
 #define BUFLEN 512  //Max length of buffer
@@ -23,6 +24,8 @@
 /*
 	End UDP Includes
 */
+
+//#define PI 3.14159265
 
 int AsixDOFPawn::m_socket = -1;
 
@@ -70,7 +73,8 @@ m_yaw(0.0)
 		}
 	};
 	static FConstructorStatics ConstructorStatics;
-
+    
+    
 	// Create static mesh component
 	PlaneMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("PlaneMesh0"));
 	PlaneMesh->SetStaticMesh(ConstructorStatics.PlaneMesh.Get());
@@ -87,15 +91,8 @@ m_yaw(0.0)
 	// Create camera component 
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera0"));
 	Camera->AttachTo(SpringArm, USpringArmComponent::SocketName);
-	Camera->bUsePawnControlRotation = false; // Don't rotate camera with controller
-    /*
-	// Set handling parameters
-	Acceleration = 500.f;
-	TurnSpeed = 50.f;
-	MaxSpeed = 4000.f;
-	MinSpeed = 500.f;
-	CurrentForwardSpeed = 500.f;
-	*/
+	Camera->bUsePawnControlRotation = true; // Don't rotate camera with controller
+
 }
 
 AsixDOFPawn::~AsixDOFPawn()
@@ -202,10 +199,19 @@ bool AsixDOFPawn::OurTick(float DeltaSeconds)
        	m_Deltapitch = pitch - m_pitch;
 		m_Deltayaw =   yaw   - m_yaw;
 		//printf("Delta --> %f %f %f \n",m_Deltaroll, m_Deltapitch, m_Deltayaw );
-		printf("speed --> %f %f %f \n",m_vx, m_vy, m_vz );
+		
 		m_roll  = roll;
 		m_pitch = pitch;
 		m_yaw   = yaw;
+		/*
+		double vzp = vx*sin(pitch* PI / 180.0);
+		double vzr = vy*sin(roll* PI / 180.0);
+		
+		m_vz = vz + vzp + vzr;
+		m_vx = vx + vx * cos(pitch* PI / 180.0);
+		m_vy = vy + vy * cos(roll* PI / 180.0);
+		*/
+		printf("6 --> %f %f %f %f %f %f \n",m_vx, m_vy, m_vz, pitch, roll, yaw );
 		ret = true;
     }
     return ret;
@@ -217,7 +223,10 @@ void AsixDOFPawn::Tick(float DeltaSeconds)
     if(ret)
     {
 	    //printf("running %f\n",DeltaSeconds);
-		const FVector LocalMove = FVector(-m_vx, -m_vy, -m_vz*10);//(CurrentForwardSpeed * DeltaSeconds, 0.f, 0.f);
+		const FVector LocalMove = FVector(m_vx*10, m_vy*10, -m_vz*10);//(CurrentForwardSpeed * DeltaSeconds, 0.f, 0.f);
+		//FVector curMove = GetVelocity();//(CurrentForwardSpeed * DeltaSeconds, 0.f, 0.f);
+		FVector curMove = ReplicatedMovement.LinearVelocity;
+		printf("------> %f %f %f \n",curMove.X, curMove.Y, curMove.Z );
 
 		// Move plan forwards (with sweep so we stop when we collide with things)
 		AddActorLocalOffset(LocalMove, true);
@@ -230,9 +239,13 @@ void AsixDOFPawn::Tick(float DeltaSeconds)
 		DeltaRotation.Pitch = m_Deltapitch;
 		DeltaRotation.Yaw 	= m_Deltayaw;
 		DeltaRotation.Roll 	= m_Deltaroll;
-		
-		// Rotate plane
+		/*
+		FRotator actorRotation(0,0,0);
+		DeltaRotation.Yaw 	= m_Deltayaw;
 		AddActorLocalRotation(DeltaRotation);
+		*/
+		// Rotate plane
+		Camera->AddLocalRotation(DeltaRotation);
 	}
 	// Call any parent class Tick implementation
 	Super::Tick(DeltaSeconds);
